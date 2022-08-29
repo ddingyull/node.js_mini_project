@@ -12,18 +12,9 @@
 
 <body>
   <%- include('nav.html')  %>
-  <!-- delete기능 넣기 위한 방법 2가지
-1. 라이브러리 사용 : method-override(node에서 사용 가능)
-2. javascript AJAX 사용 -->
 
-  <!-- margin-left 2만큼, right 3만큼 달라는 의미 -->
   <h4 class="ml-2 my-3 text-center">Todo List</h4>
-  <!-- <% for(let i = 0; i< posts.length; i++) { %>
-      <h4>List : <%= posts[i].할일 %></h4>
-      <p>Date : <%= posts[i].날짜 %> </p>
-      <button>Delete</button>
-      <% } %> -->
-
+  
   <!-- 검색하기 -->
   <div class="container input-group mb-2">
     <input class="form-control" id="search-input">
@@ -45,16 +36,11 @@
     </ul>
   </div>
 
-  <!-- AJAX?
-      자바스크립트가 서버와 데이터를 주고받을때, 요청할 때 쓰는 자바스크립트 문법
-      장정 : 새로고침 없이 통신 가능 -->
-
-  <!-- jQuery cdn -->
   <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
   <script>
     $('.delete').click((e) => {
       let postNum = e.target.dataset.id;
-      let 지금클릭한거 = $(this);
+      let click = $(this);
       //ajax 문법
       $.ajax({
         // delete요청을 할 예정이며
@@ -71,7 +57,7 @@
         // 페이지를 강제로 새고침 해주세요
         // 삭제 버튼을 누른 li요소를 제거해주세요
         console.log('성공!!');
-        지금클릭한거.parent('li').fadeOut();
+        click.parent('li').fadeOut();
         // 실패했을 때 fail코드를 실행
       }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr, textStatus, errorThrown);
@@ -79,7 +65,7 @@
     })
 
     // 검색버튼 누르면 서버로 GET요청 (query string)
-    document.getElementById('search').addEventListener('click', () => {
+    document.getElementById('search').addEventListener('click', () =>{
       let inputValue = document.getElementById('search-input').value;
       window.location.replace('/search?value=' + inputValue)
     })
