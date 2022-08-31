@@ -9,6 +9,7 @@ app.use(methodOverride('_method'))
 const dotenv = require('dotenv').config()  // env를 위한 dotenv
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));  // css파일 추가
+const ObjectId = require('mongodb')
 
 // db 링크로 불러와서 8080port로 열기
 let db;
@@ -274,3 +275,59 @@ app.get('/edit/:id', (req, res) => {
   // app.get('/shop/pants', function(요청, 응답){
   //   응답.send('바지 파는 페이지입니다.');
   // });
+
+  // 1) multer 설치하고 불러오기
+  app.use('/board/sub', require('./routes/board.js'));
+  // let storage = multer.memoryStorage({}); : lam에 저장해주세요(휘발성 O)
+
+  //2) multer에게 파일 저장시키고, 파일명 설정해주기
+  let multer = require('multer');
+  let storage = multer.diskStorage({
+    destination : (req, file, cd) => {   //저장한 이미지의 파일 저장하는 부분
+      cd(null, './public/image')
+    },
+    filename : (req, file, cd) => {  //저장한 이미지의 파일명 설정하는 부분
+      cd(null, file.originalname)
+    }
+  });
+
+  //3)위에 만들어놓은 것을 변수로 정의해주기 
+  let upload = multer({storage : storage});
+  
+  // upload 페이지  (이미지는 그 페이지 하드에 저장하는편)
+  app.get('/upload', (req,res) => {
+    res.render('upload.ejs')
+  })
+// 4)미들웨어처럼 불러오기만 하면 끝  
+//이미지 1개: 변수명.single('name이름')
+//이미지 2개 이상 : 변수명.array('name이름', 개수) + html 여러개받을 수 있는 input으로 수정
+//파일명 바꿔서 업로드 : 
+  app.post('/upload', upload.single('profile'), (req, res) => {
+    res.send('업로드 완료')
+  });
+
+  app.get('/image/:imageName', (req, res) => {
+    res.sendFile( __dirname + '/public/image/' + req.params.imageName) //server.js + 경로 + 이름
+  })
+
+  // <img src="/image/yurim.png">
+  // insert실행됐을 떄 콜백함수를 실행해달라는 말이지만 아래처럼 쓸 수도 있음
+
+  
+  app.post('/chatroom', 로그인했니, function(req, res){
+
+    let chatData = {
+      title : '채팅방',
+      member : [ObjectId(req.body.youId), req.user._id],
+      date : new Date()
+    }
+    db.collection('chatroom').insertOne(chatData).then((result) => {
+      res.send('성공')
+    })
+  })
+
+  app.get('/chat', 로그인했니, (req,res) => {
+    db.collection('chatroom').find({ member : req.user._id }).toArray().then(()=>{
+      res.render('chat.ejs', {data : result})
+    })
+  })
