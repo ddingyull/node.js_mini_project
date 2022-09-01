@@ -370,6 +370,7 @@ app.get('/edit/:id', (req, res) => {
         res.write('data: '+JSON.stringify(result)+'\n\n');   // 단, 문자형태만 서버로 전송해줄 수 있기 때문에 json자료형으로 바꿔서 전달
       })
 
+      // 채팅내용 바로 보여주기
       const pipeline = [
         {$match : { 'fullDocument.parent' : req.params.id } }
       ];
@@ -404,9 +405,9 @@ app.get('/edit/:id', (req, res) => {
         // 서버가 유저에게 메시지 전송할 때 : io.emit() , 사이트접속한 모든 사람에게!!방송하듯~
         io.emit('broadcast', data)
       });
-
     })
-    // 1:1 채팅
-    // io.to(soket.id).emit('broadcast',data)
+
+    // // 1:1 채팅
+    // // io.to(soket.id).emit('broadcast',data)
 
     

@@ -33,9 +33,12 @@ li,ol,ul{
   right: 10%;
   bottom: 170px;
   text-align: end;
-  background-color: rgb(242, 242, 212);
+}
+.chat-content li{
   border-radius: 10px;
-  padding: 3px;
+  padding: 10px;
+  background-color: rgb(242, 242, 212);
+  margin-top: 10px;
 }
 .input-group{
   position: absolute;
