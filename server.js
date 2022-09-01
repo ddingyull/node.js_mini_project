@@ -9,7 +9,12 @@ app.use(methodOverride('_method'))
 const dotenv = require('dotenv').config()  // env를 위한 dotenv
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));  // css파일 추가
-const ObjectId = require('mongodb')
+
+// socket.io 세팅 1
+const http = require('http').createServer(app);
+const{ Server } = require('socket.io');
+const io = new Server(http);
+
 
 // db 링크로 불러와서 8080port로 열기
 let db;
@@ -19,24 +24,24 @@ MongoClient.connect(
   if(err) return console.log(err);
   db = client.db('todoapp');
 
-  app.listen(8080, function(){
+  http.listen(8080, function(){    // socket.io 세팅 2 : app -> http로 수정
     console.log('listening on 8080');
   });
 });
 
 // ejs 파일 연결하기
 
-app.get('/', function(req,res) {
+app.get('/', (req,res) => {
   // res.sendFile(__dirname + '/index.html');
   res.render('index.ejs');
 })
 
-app.get('/write', function(req,res) {
+app.get('/write', (req,res) => {
   // res.sendFile(__dirname + './write.html');
   res.render('write.ejs');
 })
 
-app.get('/list', function(req,res) {
+app.get('/list', (req,res) => {
   db.collection('post').find().toArray(function(err, result){
     console.log(result);
     res.render('list.ejs', { posts : result});
@@ -313,8 +318,9 @@ app.get('/edit/:id', (req, res) => {
   // <img src="/image/yurim.png">
   // insert실행됐을 떄 콜백함수를 실행해달라는 말이지만 아래처럼 쓸 수도 있음
 
-  
+  const { ObjectId } = require('mongodb')
   app.post('/chatroom', 로그인했니, function(req, res){
+    // console.log(req.body);
 
     let chatData = {
       title : '채팅방',
@@ -326,8 +332,81 @@ app.get('/edit/:id', (req, res) => {
     })
   })
 
-  app.get('/chat', 로그인했니, (req,res) => {
-    db.collection('chatroom').find({ member : req.user._id }).toArray().then(()=>{
+  app.get('/chat', 로그인했니, function(req, res){
+    db.collection('chatroom').find({ member : req.user._id}).toArray().then((result)=>{
+      console.log(req.body);
       res.render('chat.ejs', {data : result})
     })
-  })
+  });
+
+  app.post('/message', 로그인했니, function(req, res){
+
+    let chatStorage = {
+      parent : req.body.parent,
+      content : req.body.content,
+      userid: req.user._id ,
+      data: new Date() 
+    }
+    db.collection('message').insertOne(chatStorage).then(() => {
+      console.log('DB저장성공');
+      res.send('DB저장성공');
+      })
+    });
+
+    app.get('/message:id', 로그인했니, function(req, res){
+
+      // Header수정해주세요 : 실시간 채팅채널 개설되는 코드
+      res.writeHead(200, {
+        "Connection" : "keep-alive",
+        "Content-Type" : "text/event-stream",
+        "Cache-Control" : "no-cache",
+      });
+
+      // GET이 여러번 응답해줄 수 있음(원래는 1번)
+      // get에서 데이터 보내는 법은 url로 파라미터 사용하기
+      db.collection('message').find({parent : req.params.id}).toArray()
+      .then((result)=>{
+        res.write('event: test\n');
+        res.write('data: '+JSON.stringify(result)+'\n\n');   // 단, 문자형태만 서버로 전송해줄 수 있기 때문에 json자료형으로 바꿔서 전달
+      })
+
+      const pipeline = [
+        {$match : { 'fullDocument.parent' : req.params.id } }
+      ];
+      const collection = db.collection('message');
+      const changeStream = collection.watch(pipeline); //message컬렉션을 감시하는 코드
+      changeStream.on('change', (result) => {
+        res.write('event: test\n');
+        res.write('data: ' + JSON.stringify([result.fullDocument]) +'\n\n');
+      });
+
+    });
+
+    app.get('/socket', (req, res) => {
+      res.render('socket.ejs')
+    })
+
+    // 웹소켓에 접속하면 함수 실행해주세요
+    io.on('connection', (socket) => { //socket : 접속 유저 정보가 들어있음 -> socket.id 부여되어있는 유니크한 id 확인가능
+      console.log('접속됨');
+
+      // 채팅방 (여러개) 만들기
+      socket.on('joinroom', (data) => {
+        socket.join('room1')
+      });
+
+      socket.on('room1-send', (data) => {
+        io.to('room1').emit('broadcast', data)
+      });
+
+      // 서버가 수신하려면 파라미터 뚫고 해당 이름으로 보내면 함수 실행해주세요
+      socket.on('user-send', (data) => {
+        // 서버가 유저에게 메시지 전송할 때 : io.emit() , 사이트접속한 모든 사람에게!!방송하듯~
+        io.emit('broadcast', data)
+      });
+
+    })
+    // 1:1 채팅
+    // io.to(soket.id).emit('broadcast',data)
+
+    

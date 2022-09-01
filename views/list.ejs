@@ -56,12 +56,11 @@
     // 채팅방 들어가기(javascript는 어떻게?)
     $('.chat').click(function(e){
       let id = e.target.dataset.id;
-      $.post('/chatroom', {
-        youId : id
-      }.then(() => {
+      console.log(id);
+      $.post('/chatroom', {youId : id}).then(() => {
         console.log('성공');
-      }))
-    })
+      })
+    });
 
     $('.delete').click((e) => {
       let postNum = e.target.dataset.id;
