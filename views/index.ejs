@@ -5,31 +5,33 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
   <link rel="stylesheet" href="./css/style.css">
-  <script src="./js/test.js"></script>
-  <title>EJS start</title>
+  <script defer src="./js/test.js"></script>
+  <title>CSC: college student community </title>
 </head>
 
 <body>
-  <h1>회원 목록</h1>
-  <h2>총 회원 수 <%= userCounts %></h2>
-  <ul>
-    <% if (userCounts > 0 ) {%>
-    <% for (let i = 0; i < userCounts; i++) {%>
-    <li>
-      <img src="/image/<%= img %>" alt="꼬부기">
-      <p>ID: <%= USER[i].id %></p>
-      <p>NAME: <%= USER[i].name %></p>
-      <p>E-mail: <%= USER[i].email %></p>
-    </li>
-    <% } %>
-    <% } else { %>
-    <li>
-      회원 정보가 없습니다!
-    </li>
-    <% } %>
 
-  </ul>
+  <!-- nav bar -->
+  <%- include('nav.html')  %>
+
+  <h3 class="main_title">community</h3>
+  <img src="/public/image/students.png" alt="">
+
+  <div class="container">
+    <div class="link link1">
+      <span><a href="/users">To check Users</a></span>
+    </div>
+    <div class="link link2">
+      <span> <a href="/users">News of our school</a></span>
+    </div>
+    <div class="link link3">
+      <span> <a href="/writes">Posting</a></span>
+    </div>
+  </div>
+  </div>
+
 </body>
-
 </html>
