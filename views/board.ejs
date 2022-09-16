@@ -11,6 +11,12 @@
   <script defer src="/routes/board_db.js"></script>
 </head>
 
+<style>
+  li{
+    list-style: none;
+    /* border: 1px solid #c8c8c8; */
+  }
+</style>
 <body>
   <%- include('nav.html')  %>
 
@@ -31,12 +37,16 @@
       <div class="board_write" style="text-align:end">
         <span>현재 등록 글 : &nbsp; <%= boardCounters %></span>
         <a class="btn btn-warning" href="/board/write">글쓰기</a>
+        <a class="btn btn-danger" href="/login/logout">로그아웃</a>
       </div>
       <div class="board_body" >
         <ul class="board">
           <% if (boardCounters> 0) { %>
             <% for(let i=0; i < boardCounters; i++) { %>
-              <li>
+              <li class="list">
+                <div class="title m-3">
+                  <%= BOARD[i].id %>
+                </div>
                 <div class="title m-3">
                   <%= BOARD[i].title %>
                 </div>
@@ -46,8 +56,10 @@
               </li>
         </ul>
         <div class="foot">
-          <a class="btn btn-warning p-1" href="board/modify/title/<%= BOARD[i].title %>">수정</a>
-          <a class="btn btn-dark p-1" href="#" onclick="deleteBoard('<%= BOARD[i].title %>')">삭제</a>
+          <% if (BOARD[i].id === userId) {%>
+            <a class="btn btn-warning p-1" href="board/modify/title/<%= BOARD[i].title %>">수정</a>
+            <a class="btn btn-dark p-1" href="#" onclick="deleteBoard('<%= BOARD[i].title %>')">삭제</a>
+          <% } %>
         </div>
               <% } %>
                 <% } else { %>

@@ -68,15 +68,28 @@ a{
   
 }
 .link1{
-  margin-right: 10px;
+  margin: 10px 10px 0 0;
   background-color: rgb(246, 211, 217);
 }
 .link2{
-  margin-right: 10px;
+  margin: 10px 10px 0 0;
   background-color: rgb(252, 252, 212)
 }
 .link3{
+  margin: 10px 0 0 0;
   background-color: rgb(209, 235, 245)
+}
+.link4{
+  margin: 10px 10px 0 0;
+  background-color: #c8c8c8
+}
+.link5{
+  margin: 10px 10px 0 0;
+  background-color: #c8c8c8
+}
+.link6{
+  margin: 10px 0 0 0;
+  background-color: #c8c8c8
 }
 
 /* [user.ejs] */
